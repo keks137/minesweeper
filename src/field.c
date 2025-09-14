@@ -8,8 +8,8 @@ void genMines(Field *field)
 	while (minesLeft > 0) {
 		uint32_t max_index = (field->width * field->height);
 		uint32_t randField = rand() % max_index;
-		if (field->fieldnums[randField] != valBomb) {
-			field->fieldnums[randField] = valBomb;
+		if (field->fieldnums[randField].val != valBomb) {
+			field->fieldnums[randField].val = valBomb;
 			minesLeft--;
 		}
 	}
@@ -28,7 +28,8 @@ int32_t getOffsetVals(Field *field, uint32_t baseX, uint32_t baseY)
 			    (uint32_t)neighborY < field->height) {
 				int32_t offset_index =
 					neighborX + neighborY * field->width;
-				if (field->fieldnums[offset_index] == valBomb) {
+				if (field->fieldnums[offset_index].val ==
+				    valBomb) {
 					fieldVal++;
 				}
 			}
@@ -41,7 +42,8 @@ void genNums(Field *field)
 	for (uint32_t heightI = 0; heightI < field->height; heightI++) {
 		for (uint32_t widthI = 0; widthI < field->width; widthI++) {
 			uint32_t currentIndex = heightI * field->width + widthI;
-			int32_t *currentField = &field->fieldnums[currentIndex];
+			int32_t *currentField =
+				&field->fieldnums[currentIndex].val;
 			if (*currentField != valBomb) {
 				*currentField =
 					getOffsetVals(field, widthI, heightI);
@@ -50,12 +52,13 @@ void genNums(Field *field)
 	}
 }
 
-void printField(Field *field)
+void printFullField(Field *field)
 {
 	for (uint32_t heightI = 0; heightI < field->height; heightI++) {
 		for (uint32_t withI = 0; withI < field->width; withI++) {
 			int32_t fieldVal =
-				field->fieldnums[heightI * field->width + withI];
+				field->fieldnums[heightI * field->width + withI]
+					.val;
 			if (fieldVal == valBomb) {
 				printf("- ");
 			} else {
@@ -66,3 +69,29 @@ void printField(Field *field)
 	}
 }
 
+void printVisibleField(Field *field)
+{
+	for (uint32_t heightI = 0; heightI < field->height; heightI++) {
+		for (uint32_t withI = 0; withI < field->width; withI++) {
+			Tile tile =
+				field->fieldnums[heightI * field->width + withI];
+			if (tile.visible) {
+				if (tile.val == valBomb) {
+					printf("- ");
+				} else {
+					printf("%i ", tile.val);
+				}
+			} else {
+				printf("  ");
+			}
+		}
+		putc('\n', stdout);
+	}
+}
+int32_t uncoverTile(Field *field, uint32_t tileX, uint32_t tileY)
+{
+	uint32_t currentIndex = tileX + tileY * field->width;
+	int32_t val = field->fieldnums[currentIndex].val;
+	field->fieldnums[currentIndex].visible=true;
+	return val;
+}
