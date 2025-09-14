@@ -24,4 +24,5 @@ void genNums(Field *field);
 void printFullField(Field *field);
 void printVisibleField(Field *field);
 int32_t uncoverTile(Field *field, uint32_t tileX, uint32_t tileY);
+uint32_t countInvisible(Field *field);
 #endif // INCLUDE_SRC_FIELD_H_

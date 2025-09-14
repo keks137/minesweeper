@@ -154,3 +154,16 @@ int32_t uncoverTile(Field *field, uint32_t tileX, uint32_t tileY)
 		uncoverFlood(field, tileX, tileY);
 	return val;
 }
+uint32_t countInvisible(Field *field)
+{
+	uint32_t count = field->width * field->height;
+	for (uint32_t heightI = 0; heightI < field->height; heightI++) {
+		for (uint32_t widthI = 0; widthI < field->width; widthI++) {
+			if (field->tiles[widthI + heightI * field->width]
+				    .visible) {
+				count--;
+			}
+		}
+	}
+	return count;
+}
