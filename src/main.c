@@ -11,7 +11,7 @@ int main()
 				   .width = FIELD_WIDTH,
 				   .mines = NUM_MINES };
 	Tile fieldbuf[GameField.width * GameField.height] = {};
-	GameField.fieldnums = fieldbuf;
+	GameField.tiles = fieldbuf;
 	srand(47060);
 	genMines(&GameField);
 	genNums(&GameField);
@@ -27,7 +27,7 @@ int main()
 
 		int32_t val = uncoverTile(&GameField, tileX, tileY);
 		if (val == valBomb)
-	shouldExit=true;
+			shouldExit = true;
 		printf("was: %i\n", val);
 	}
 	printFullField(&GameField);

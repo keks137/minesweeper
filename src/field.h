@@ -15,7 +15,7 @@ typedef struct Field {
 	uint32_t mines;
 	uint32_t width;
 	uint32_t height;
-	Tile *fieldnums;
+	Tile *tiles;
 } Field;
 
 void genMines(Field *field);
