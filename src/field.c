@@ -25,10 +25,8 @@ int32_t getOffsetVals(Field *field, uint32_t baseX, uint32_t baseY)
 		int32_t neighborX = baseX + neighborOffsetX[offI];
 		int32_t neighborY = baseY + neighborOffsetY[offI];
 		if (neighborX >= 0 && (uint32_t)neighborX < field->width) {
-			if (neighborY >= 0 &&
-			    (uint32_t)neighborY < field->height) {
-				int32_t offset_index =
-					neighborX + neighborY * field->width;
+			if (neighborY >= 0 && (uint32_t)neighborY < field->height) {
+				int32_t offset_index = neighborX + neighborY * field->width;
 				if (field->tiles[offset_index].val == valBomb) {
 					fieldVal++;
 				}
@@ -42,7 +40,7 @@ void genNums(Field *field)
 	for (uint32_t heightI = 0; heightI < field->height; heightI++) {
 		for (uint32_t widthI = 0; widthI < field->width; widthI++) {
 			uint32_t currentIndex = heightI * field->width + widthI;
-			int32_t *currentField = &field->tiles[currentIndex].val;
+			int8_t *currentField = &field->tiles[currentIndex].val;
 			if (*currentField != valBomb) {
 				*currentField =
 					getOffsetVals(field, widthI, heightI);
@@ -86,52 +84,33 @@ void printVisibleField(Field *field)
 		putc('\n', stdout);
 	}
 }
-void uncoverFlood(Field *field, uint32_t tileX, uint32_t tileY)
+void uncoverFlood(Field *field, Tilepos tile)
 {
-	struct xandy {
-		uint32_t x;
-		uint32_t y;
-	};
 	const uint32_t tileIndexBufSize = 2048;
-	struct xandy tileIndexBuf[tileIndexBufSize];
+	Tilepos tileIndexBuf[tileIndexBufSize];
 	size_t tileIndexBufLevel = 0;
 	size_t tileIndexBufCurrent = 0;
 
-	tileIndexBuf[0].x = tileX;
-	tileIndexBuf[0].y = tileY;
+	tileIndexBuf[0].x = tile.x;
+	tileIndexBuf[0].y = tile.y;
 	tileIndexBufLevel++;
 
 	int32_t neighborOffsetX[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 	int32_t neighborOffsetY[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	while (tileIndexBufCurrent < tileIndexBufLevel) {
 		for (uint32_t offI = 0; offI < 8; offI++) {
-			int32_t neighborX =
-				tileIndexBuf[tileIndexBufCurrent].x +
-				neighborOffsetX[offI];
-			int32_t neighborY =
-				tileIndexBuf[tileIndexBufCurrent].y +
-				neighborOffsetY[offI];
-			if (neighborX >= 0 &&
-			    (uint32_t)neighborX < field->width) {
-				if (neighborY >= 0 &&
-				    (uint32_t)neighborY < field->height) {
-					int32_t offset_index =
-						neighborX +
-						neighborY * field->width;
-					Tile *current_tile =
-						&field->tiles[offset_index];
+			int32_t neighborX = tileIndexBuf[tileIndexBufCurrent].x + neighborOffsetX[offI];
+			int32_t neighborY = tileIndexBuf[tileIndexBufCurrent].y + neighborOffsetY[offI];
+			if (neighborX >= 0 && (uint32_t)neighborX < field->width) {
+				if (neighborY >= 0 && (uint32_t)neighborY < field->height) {
+					int32_t offset_index = neighborX + neighborY * field->width;
+					Tile *current_tile = &field->tiles[offset_index];
 					if (!field->tiles[offset_index].visible) {
 						current_tile->visible = true;
-						if (current_tile->val ==
-						    valEmpty) {
-							if (tileIndexBufLevel <
-							    tileIndexBufSize) {
-								tileIndexBuf[tileIndexBufLevel]
-									.x =
-									neighborX;
-								tileIndexBuf[tileIndexBufLevel]
-									.y =
-									neighborY;
+						if (current_tile->val == valEmpty) {
+							if (tileIndexBufLevel < tileIndexBufSize) {
+								tileIndexBuf[tileIndexBufLevel].x = neighborX;
+								tileIndexBuf[tileIndexBufLevel].y = neighborY;
 								tileIndexBufLevel++;
 
 							} else {
@@ -145,13 +124,13 @@ void uncoverFlood(Field *field, uint32_t tileX, uint32_t tileY)
 		tileIndexBufCurrent++;
 	}
 }
-int32_t uncoverTile(Field *field, uint32_t tileX, uint32_t tileY)
+int32_t uncoverTile(Field *field, Tilepos tile)
 {
-	uint32_t currentIndex = tileX + tileY * field->width;
+	uint32_t currentIndex = tile.x + tile.y * field->width;
 	int32_t val = field->tiles[currentIndex].val;
 	field->tiles[currentIndex].visible = true;
 	if (val == 0)
-		uncoverFlood(field, tileX, tileY);
+		uncoverFlood(field, tile);
 	return val;
 }
 uint32_t countInvisible(Field *field)
@@ -159,8 +138,7 @@ uint32_t countInvisible(Field *field)
 	uint32_t count = field->width * field->height;
 	for (uint32_t heightI = 0; heightI < field->height; heightI++) {
 		for (uint32_t widthI = 0; widthI < field->width; widthI++) {
-			if (field->tiles[widthI + heightI * field->width]
-				    .visible) {
+			if (field->tiles[widthI + heightI * field->width].visible) {
 				count--;
 			}
 		}

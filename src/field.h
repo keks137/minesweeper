@@ -7,9 +7,14 @@ enum FieldVals {
 	valEmpty = 0,
 };
 
+typedef struct Tilepos{
+	uint16_t x;
+	uint16_t y;
+}Tilepos;
+
 typedef struct Tile{
+	int8_t val;
 	bool visible;
-	int32_t val;
 }Tile;
 typedef struct Field {
 	uint32_t mines;
@@ -23,6 +28,7 @@ int32_t getOffsetVals(Field *field, uint32_t baseX, uint32_t baseY);
 void genNums(Field *field);
 void printFullField(Field *field);
 void printVisibleField(Field *field);
-int32_t uncoverTile(Field *field, uint32_t tileX, uint32_t tileY);
+int32_t uncoverTile(Field *field, Tilepos tile);
+
 uint32_t countInvisible(Field *field);
 #endif // INCLUDE_SRC_FIELD_H_
