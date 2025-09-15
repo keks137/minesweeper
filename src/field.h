@@ -7,15 +7,15 @@ enum FieldVals {
 	valEmpty = 0,
 };
 
-typedef struct Tilepos {
+typedef struct Tilepos{
 	uint16_t x;
 	uint16_t y;
-} Tilepos;
+}Tilepos;
 
-typedef struct Tile {
+typedef struct Tile{
 	int8_t val;
 	bool visible;
-} Tile;
+}Tile;
 typedef struct Field {
 	uint32_t mines;
 	uint32_t width;
@@ -29,5 +29,6 @@ void genNums(Field *field);
 void printFullField(Field *field);
 void printVisibleField(Field *field);
 int32_t uncoverTile(Field *field, Tilepos tile);
+
 uint32_t countInvisible(Field *field);
 #endif // INCLUDE_SRC_FIELD_H_
