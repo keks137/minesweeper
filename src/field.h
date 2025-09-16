@@ -23,7 +23,7 @@ typedef struct Field {
 	Tile *tiles;
 } Field;
 
-void genMines(Field *field);
+void genMines(Field *field, unsigned int seed);
 int32_t getOffsetVals(Field *field, uint32_t baseX, uint32_t baseY);
 void genNums(Field *field);
 void printFullField(Field *field);

@@ -3,8 +3,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-void genMines(Field *field)
+void genMines(Field *field, unsigned int seed)
 {
+	srand(seed);
+
 	uint32_t minesLeft = field->mines;
 	while (minesLeft > 0) {
 		uint32_t max_index = (field->width * field->height);

@@ -69,6 +69,7 @@ int main(int argc, char **argv)
 	nob_cc_inputs(&cmd, SRC_FOLDER "field.c");
 	nob_cc_inputs(&cmd, SRC_FOLDER "ui.c");
 	nob_cc_output(&cmd, BIN_FOLDER "minesweeper");
+	nob_cmd_append(&cmd,"-I./"RSOURCE);;;
 
 	for (int i = 0; i < NOB_ARRAY_LEN(rayfiles); i++) {
 		const char *objfile = nob_temp_sprintf(
